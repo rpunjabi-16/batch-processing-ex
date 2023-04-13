@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="learning-test-suite.xml" />
+	<munit:test name="learning-test-suite-learningFlowTest" doc:id="8fbd8c1a-30ea-48d6-a4fb-3b7c3c9fc716" description="Test">
+		<munit:behavior>
+			<set-payload value='{ "firstName": "John","lastName": "Doe", "age": 12}' doc:name="Set Payload" doc:id="fc5a1f14-6c42-4f28-b9de-ece0a11c2605" />
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to learningFlow" doc:id="63b6b317-1adf-4edb-bbd7-25ac42525157" name="learningFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="6a86cdce-b28f-4208-a16a-45fcc35a9075" actual="#[payload]" expected='{ "firstName": "John","lastName": "Doe", "age": 12}'/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

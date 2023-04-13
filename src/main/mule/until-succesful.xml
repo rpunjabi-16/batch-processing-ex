@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="6560f468-5340-426b-9844-2faf9ca285b3" >
+		<http:request-connection host="localhost" port="8081" />
+	</http:request-config>
+	<flow name="until-succesfulFlow" doc:id="da216d95-f958-4ce7-a99d-7f0f86797f97" >
+		<http:listener doc:name="Listener" doc:id="d97fcecd-a19d-493d-8248-4a836cebffc1" config-ref="HTTP_Listener_config" path="/untilSuccessful"/>
+		<until-successful maxRetries="5" doc:name="Until Successful" doc:id="f819b522-cec5-4eb1-84c5-32d37658e208" millisBetweenRetries="10000">
+			<flow-ref doc:name="Flow Reference" doc:id="c2ddf3c9-3dd6-415f-bd84-577ae1ca7ef0" name="until-succesfulFlow1"/>
+		</until-successful>
+	</flow>
+	<flow name="until-succesfulFlow1" doc:id="4e3d7e93-bfa2-4c7d-b0cb-3f5a24e42a99" >
+		<logger level="INFO" doc:name="Logger" doc:id="ad0f542f-33fa-47ed-a3bf-ea0c6ec460d5" message="Until Succesful Called" />
+		<ee:transform doc:name="Transform Message" doc:id="32010390-7bcb-4420-8daa-8f2c825acee9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+m:
+if(attributes.queryParams.check=="run") 10/1
+else 10/0]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

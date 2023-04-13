@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets"
+	xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="05ef2e5d-1a1c-40f3-bd79-613e337eded4" >
+		<http:listener-connection host="0.0.0.0" port="8083" />
+	</http:listener-config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="ccaa996a-8034-40b8-9e6f-4e5c6bec53c2" >
+		<db:generic-connection url="jdbc:postgresql://localhost:5432/test_db" driverClassName="org.postgresql.Driver" user="postgres" password="123" />
+	</db:config>
+	<flow name="learningFlow" doc:id="e9f1cbae-97a4-458d-9979-0e7c22e29834" >
+		<http:listener doc:name="Listener" doc:id="da409e79-e91b-4e55-a9a8-66189ef71ad1" config-ref="HTTP_Listener_config" path="/choice-router"/>
+		<choice doc:name="Choice" doc:id="0dcd2c43-868e-46c1-8ce0-a9d8ff69d15a" >
+			<when expression='#[attributes.queryParams.operation=="1"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="040aeccc-ee44-4105-94da-c10e47bfad1f" message="Operation is Insert" category="NULL"/>
+				<ee:transform doc:name="Transform Message" doc:id="87da3f97-2f08-4a39-b68a-d263737e7873" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message":" in OPERATION 1"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<when expression='#[attributes.queryParams.operation=="2"]'>
+				<logger level="INFO" doc:name="Logger" doc:id="e42e223d-0ec3-4ce4-97c9-7a1569499139" message="Operation is Select"/>
+				<ee:transform doc:name="Transform Message" doc:id="55f4c7c9-199e-479b-907c-e7c4705252aa" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+	"message":"In Operation 2"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="32e720c4-3ff8-48e9-ae03-d3f157f129ec" message="Wrong Operation"/>
+				<ee:transform doc:name="Transform Message" doc:id="4069bac4-fde4-47c3-a0a2-1ab00fe9235d" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+{
+	"message":"Wrong choice"
+}
+]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="scatter-gatherFlow" doc:id="76a46e19-ed15-4974-b8f3-8be762dd8db4" >
+		<http:listener doc:name="Listener" doc:id="1109a534-9a6c-4db6-b92a-126abfb809b0" config-ref="HTTP_Listener_config" path="/scatter-gather"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="04d11892-00db-4b0e-9498-853e1bfd40f6" >
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="c64aad4f-d239-4244-9f79-0f46e26832f9" message="First Process Sum"/>
+				<set-variable value="#[payload.firstNum + payload.secondNum]" doc:name="Set Variable" doc:id="f6abb525-95ae-4fc5-8792-02ea307e2006" variableName="result"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="76b06401-6edd-4998-982e-c9561ca2c96a" message="Second Process Differebce"/>
+				<set-variable value="#[payload.firstNum - payload.secondNum]" doc:name="Set Variable" doc:id="bb3e574b-8219-47fa-a4c9-ce001d05a0a1" variableName="result"/>
+			</route>
+			<route >
+				<logger level="INFO" doc:name="Logger" doc:id="d37d1357-64d5-4d87-b0c2-4729c4237932" message="Third process Multiply"/>
+				<set-variable value="#[payload.firstNum *  payload.secondNum]" doc:name="Set Variable" doc:id="38d7ea18-7295-4a5d-8fc3-beaa686d0a8c" variableName="result"/>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="6acec374-3c27-48d1-9f54-a34500a52f09" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+	vars.result
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
